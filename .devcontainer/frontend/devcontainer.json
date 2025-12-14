@@ -1,0 +1,63 @@
+{
+  // DevContainer の表示名（VS Code 左下などに表示される）
+  "name": "entra-poc-frontend",
+  // 利用する docker-compose.yml
+  // この devcontainer.json は .devcontainer/frontend/ 配下にあるため、
+  // リポジトリ直下の docker-compose.yml を 2 階層上から参照している
+  "dockerComposeFile": [
+    "../../docker-compose.yml"
+  ],
+  // docker-compose.yml 内の service 名
+  // frontend コンテナを DevContainer として利用する
+  "service": "frontend",
+  // DevContainer を開いたときのワークスペースのルート
+  // VS Code 上では /workspace/frontend がプロジェクトルートとして扱われる
+  "workspaceFolder": "/workspace/frontend",
+  // コンテナ内で VS Code が接続するユーザー
+  // node:20-bookworm には最初から node(uid=1000, gid=1000) が存在するため、
+  // 余計な useradd / usermod をせずに安全に利用できる
+  "remoteUser": "node",
+  // ホスト（WSL 側）の UID/GID に合わせて、remoteUser(node) の UID/GID を調整する
+  // これにより bind mount(/workspace) 上のファイル権限事故を防ぐ
+  "updateRemoteUserUID": true,
+  // DevContainer 作成後に一度だけ実行されるコマンド
+  // - package-lock.json があれば npm ci（再現性重視）
+  // - 無ければ npm install（初回セットアップ）
+  // ※ sudo は使わない（root 所有の node_modules を作らないため）
+  "postCreateCommand": "sh -lc 'cd /workspace/frontend && (test -f package-lock.json && npm ci || npm install)'",
+  // VS Code 側のカスタマイズ設定
+  "customizations": {
+    "vscode": {
+      // 自動インストールする VS Code 拡張
+      "extensions": [
+        "dbaeumer.vscode-eslint", // ESLint
+        "esbenp.prettier-vscode", // Prettier
+        "ms-azuretools.vscode-docker" // Docker 拡張
+      ],
+      "settings": {
+        // /workspace/frontend を開いていても、
+        // 親ディレクトリの /workspace/.git を Git ルートとして認識させる
+        "git.openRepositoryInParentFolders": "always",
+        // bind mount + WSL 環境でのファイル監視負荷を軽減
+        // node_modules / target / .git は監視対象から除外
+        "files.watcherExclude": {
+          "**/node_modules/**": true,
+          "**/target/**": true,
+          "**/.git/**": true
+        },
+        // ファイル検索からも不要なディレクトリを除外
+        "search.exclude": {
+          "**/node_modules/**": true,
+          "**/target/**": true
+        },
+        // 保存時に自動フォーマット（Prettier/ESLint 設定に従う）
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  // コンテナ内で公開しているポートを VS Code 経由でホストに転送
+  // Vite の dev server 用
+  "forwardPorts": [
+    5173
+  ]
+}

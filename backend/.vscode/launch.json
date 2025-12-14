@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: Actix (debug)",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": {
+        "args": ["run"],
+        "filter": {
+          "name": "backend",
+          "kind": "bin"
+        }
+      },
+      "env": {
+        "RUST_LOG": "debug",
+        "DATABASE_URL": "postgres://app:app@db:5432/appdb"
+      },
+      "cwd": "/workspace/backend"
+    }
+  ]
+}

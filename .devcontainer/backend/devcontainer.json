@@ -1,0 +1,51 @@
+{
+  "name": "entra-poc-backend",
+  "dockerComposeFile": [
+    "../..//docker-compose.yml"
+  ],
+  "service": "backend",
+  "workspaceFolder": "/workspace/backend",
+  // ✅ 開発者ごとの UID/GID 差を吸収（bind mount の権限事故を防ぐ）
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+  // backend を開いた後に実行（Rust依存取得など）
+  "postCreateCommand": "cargo fetch",
+  // ※ 基本は VS Code の設定で親の .git を拾わせる（下の settings）
+  //   どうしても Git ルート固定したいなら remoteEnv を残す（任意）
+  // "remoteEnv": {
+  //   "GIT_WORK_TREE": "/workspace",
+  //   "GIT_DIR": "/workspace/.git"
+  // },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "tamasfe.even-better-toml",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        // ✅ /workspace/backend を開いていても /workspace/.git を拾う
+        "git.openRepositoryInParentFolders": "always",
+        // ✅ node_modules/target 等の監視で重くならないように
+        "files.watcherExclude": {
+          "**/target/**": true,
+          "**/node_modules/**": true,
+          "**/.git/**": true
+        },
+        // ✅ ファイル検索も軽くする
+        "search.exclude": {
+          "**/target/**": true,
+          "**/node_modules/**": true
+        },
+        // rust-analyzer がワークスペースを誤解しないように（任意）
+        "rust-analyzer.cargo.workspaceDiscovery": true
+      }
+    }
+  },
+  // backend 側でよく使うポートだけ forward（好みで）
+  "forwardPorts": [
+    8080,
+    5432
+  ]
+}

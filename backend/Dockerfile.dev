@@ -1,0 +1,26 @@
+# backend/Dockerfile.dev
+FROM public.ecr.aws/docker/library/rust:1-bookworm
+
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# ✅ ユーザー作成（衝突は考慮しない前提）
+RUN groupadd --gid ${USER_GID} ${USERNAME} \
+ && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} -s /bin/bash
+
+# (任意) devcontainer で git/https 等を使うなら
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git ca-certificates curl bash \
+ && rm -rf /var/lib/apt/lists/*
+
+# ✅ volume 初期化対策：
+# - backend_target が /workspace/backend/target にマウントされるので
+#   マウント先を先に作って「vscode 所有」にしておく
+RUN mkdir -p /workspace/backend/target \
+ && chown -R ${USERNAME}:${USERNAME} /workspace
+
+WORKDIR /workspace/backend
+
+# ✅ DevContainer/compose 単体起動でも root 事故を防ぐ
+USER ${USERNAME}
