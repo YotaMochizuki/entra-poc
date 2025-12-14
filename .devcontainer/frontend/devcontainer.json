@@ -1,62 +1,67 @@
 {
-  // DevContainer の表示名（VS Code 左下などに表示される）
+  // DevContainer の表示名（VS Code 左下など）
   "name": "entra-poc-frontend",
-  // 利用する docker-compose.yml
-  // この devcontainer.json は .devcontainer/frontend/ 配下にあるため、
-  // リポジトリ直下の docker-compose.yml を 2 階層上から参照している
+  // リポジトリ直下の docker-compose.yml を参照（frontend/devcontainer.json から 2階層上）
   "dockerComposeFile": [
     "../../docker-compose.yml"
   ],
-  // docker-compose.yml 内の service 名
-  // frontend コンテナを DevContainer として利用する
+  // compose の service 名
   "service": "frontend",
-  // DevContainer を開いたときのワークスペースのルート
-  // VS Code 上では /workspace/frontend がプロジェクトルートとして扱われる
+  // VS Code 上でのプロジェクトルート
   "workspaceFolder": "/workspace/frontend",
-  // コンテナ内で VS Code が接続するユーザー
-  // node:20-bookworm には最初から node(uid=1000, gid=1000) が存在するため、
-  // 余計な useradd / usermod をせずに安全に利用できる
+  /**
+   * ✅ この DevContainer が起動するサービスを固定
+   * - frontend は frontend だけを up する
+   * - backend 側 DevContainer を開いていても巻き込みを起こしにくくする
+   */
+  "runServices": [
+    "frontend"
+  ],
+  /**
+   * ✅ ウィンドウを閉じても compose を止めない
+   * - backend 側が起動中でも frontend の window close で落とさない
+   */
+  "shutdownAction": "none",
+  /**
+   * ✅ frontend は公式 node イメージの node ユーザーを使う
+   * - node:20-bookworm に node(uid=1000,gid=1000) が最初から居る
+   * - useradd/usermod を避けることで壊れにくい
+   */
   "remoteUser": "node",
-  // ホスト（WSL 側）の UID/GID に合わせて、remoteUser(node) の UID/GID を調整する
-  // これにより bind mount(/workspace) 上のファイル権限事故を防ぐ
   "updateRemoteUserUID": true,
-  // DevContainer 作成後に一度だけ実行されるコマンド
-  // - package-lock.json があれば npm ci（再現性重視）
-  // - 無ければ npm install（初回セットアップ）
-  // ※ sudo は使わない（root 所有の node_modules を作らないため）
+  /**
+   * ✅ 依存インストール（sudo禁止：root 所有 node_modules を作らない）
+   * - package-lock.json があれば npm ci
+   * - 無ければ npm install
+   */
   "postCreateCommand": "sh -lc 'cd /workspace/frontend && (test -f package-lock.json && npm ci || npm install)'",
-  // VS Code 側のカスタマイズ設定
   "customizations": {
     "vscode": {
-      // 自動インストールする VS Code 拡張
       "extensions": [
-        "dbaeumer.vscode-eslint", // ESLint
-        "esbenp.prettier-vscode", // Prettier
-        "ms-azuretools.vscode-docker" // Docker 拡張
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
       ],
       "settings": {
-        // /workspace/frontend を開いていても、
-        // 親ディレクトリの /workspace/.git を Git ルートとして認識させる
+        // ✅ /workspace/frontend を開いていても /workspace/.git を拾う
         "git.openRepositoryInParentFolders": "always",
-        // bind mount + WSL 環境でのファイル監視負荷を軽減
-        // node_modules / target / .git は監視対象から除外
+        // ✅ 監視負荷軽減
         "files.watcherExclude": {
           "**/node_modules/**": true,
           "**/target/**": true,
           "**/.git/**": true
         },
-        // ファイル検索からも不要なディレクトリを除外
+        // ✅ 検索対象からも除外
         "search.exclude": {
           "**/node_modules/**": true,
           "**/target/**": true
         },
-        // 保存時に自動フォーマット（Prettier/ESLint 設定に従う）
+        // ✅ 保存時フォーマット（Prettier/ESLint 側の設定に従う）
         "editor.formatOnSave": true
       }
     }
   },
-  // コンテナ内で公開しているポートを VS Code 経由でホストに転送
-  // Vite の dev server 用
+  // Vite dev server 用
   "forwardPorts": [
     5173
   ]

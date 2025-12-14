@@ -1,21 +1,34 @@
 {
+  // DevContainer 名（VS Code 左下の接続先表示）
   "name": "entra-poc-backend",
+  // リポジトリ直下の docker-compose.yml を参照（backend/devcontainer.json から 2階層上）
   "dockerComposeFile": [
-    "../..//docker-compose.yml"
+    "../../docker-compose.yml"
   ],
+  // compose の service 名
   "service": "backend",
+  // この DevContainer を開いたときのワークスペース
   "workspaceFolder": "/workspace/backend",
+  /**
+   * ✅ この DevContainer が起動するサービスを固定
+   * - backend を開いたら backend + db だけを up する
+   * - frontend 側 DevContainer を開いた時に backend が巻き込まれて recreate されにくくなる
+   */
+  "runServices": [
+    "backend",
+    "db"
+  ],
+  /**
+   * ✅ ウィンドウを閉じても compose を止めない
+   * - 片方の DevContainer を閉じた時に、もう片方まで落ちる事故を防ぐ
+   */
+  "shutdownAction": "none",
   // ✅ 開発者ごとの UID/GID 差を吸収（bind mount の権限事故を防ぐ）
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  // backend を開いた後に実行（Rust依存取得など）
+  // backend を開いた後に実行（Rust 依存取得など）
   "postCreateCommand": "cargo fetch",
-  // ※ 基本は VS Code の設定で親の .git を拾わせる（下の settings）
-  //   どうしても Git ルート固定したいなら remoteEnv を残す（任意）
-  // "remoteEnv": {
-  //   "GIT_WORK_TREE": "/workspace",
-  //   "GIT_DIR": "/workspace/.git"
-  // },
+  // VS Code 側のカスタマイズ設定
   "customizations": {
     "vscode": {
       "extensions": [
@@ -27,23 +40,23 @@
       "settings": {
         // ✅ /workspace/backend を開いていても /workspace/.git を拾う
         "git.openRepositoryInParentFolders": "always",
-        // ✅ node_modules/target 等の監視で重くならないように
+        // ✅ target/node_modules/.git の監視を除外（WSL + bind mount で重くなる対策）
         "files.watcherExclude": {
           "**/target/**": true,
           "**/node_modules/**": true,
           "**/.git/**": true
         },
-        // ✅ ファイル検索も軽くする
+        // ✅ 検索対象からも除外
         "search.exclude": {
           "**/target/**": true,
           "**/node_modules/**": true
         },
-        // rust-analyzer がワークスペースを誤解しないように（任意）
+        // 任意：rust-analyzer のワークスペース探索
         "rust-analyzer.cargo.workspaceDiscovery": true
       }
     }
   },
-  // backend 側でよく使うポートだけ forward（好みで）
+  // backend 側でよく使うポートだけ forward
   "forwardPorts": [
     8080,
     5432

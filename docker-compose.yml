@@ -11,8 +11,6 @@ services:
       DATABASE_URL: postgres://app:app@db:5432/appdb
     ports:
       - "8080:8080"
-    depends_on:
-      - db
     command: sleep infinity
 
   frontend:
@@ -25,9 +23,7 @@ services:
       - frontend_node_modules:/workspace/frontend/node_modules
     ports:
       - "5173:5173"
-    depends_on:
-      - backend
-    command: sleep infinity
+    command: ["sh", "-lc", "cd /workspace/frontend && npm run dev -- --host 0.0.0.0 --port 5173"]
 
   db:
     image: postgres:16

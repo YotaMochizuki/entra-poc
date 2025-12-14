@@ -5,8 +5,13 @@
       "name": "Backend: Actix (debug)",
       "type": "lldb",
       "request": "launch",
+      "initCommands": [
+        "settings set target.disable-aslr false"
+      ],
       "cargo": {
-        "args": ["run"],
+        "args": [
+          "run"
+        ],
         "filter": {
           "name": "backend",
           "kind": "bin"
