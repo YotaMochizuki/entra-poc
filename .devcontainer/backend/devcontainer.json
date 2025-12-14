@@ -56,6 +56,13 @@
       }
     }
   },
+  // ホスト(WSL)の ssh-agent ソケットをコンテナに渡す
+  "mounts": [
+    "type=bind,source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent"
+  ],
+  "remoteEnv": {
+    "SSH_AUTH_SOCK": "/ssh-agent"
+  },
   // backend 側でよく使うポートだけ forward
   "forwardPorts": [
     8080,
