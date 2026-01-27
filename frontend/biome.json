@@ -14,7 +14,11 @@
   },
   "files": {
     "ignore": [
-      ".vscode/**"
+      ".vscode/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**"
     ]
   }
 }
