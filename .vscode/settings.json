@@ -1,0 +1,18 @@
+{
+	"editor.tabSize": 2,
+	"editor.insertSpaces": true,
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	// ✅ target/node_modules/.git の監視を除外（WSL + bind mount で重くなる対策）
+	"files.watcherExclude": {
+		"**/target/**": true,
+		"**/node_modules/**": true,
+		"**/.git/**": true
+	},
+	// ✅ 検索対象からも除外
+	"search.exclude": {
+		"**/target/**": true,
+		"**/node_modules/**": true
+	},
+}

@@ -26,7 +26,7 @@
   // ✅ 開発者ごとの UID/GID 差を吸収（bind mount の権限事故を防ぐ）
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  // backend を開いた後に実行（Rust 依存取得など）
+  // 初回の依存DLを自動で行う。
   "postCreateCommand": "cargo fetch",
   // VS Code 側のカスタマイズ設定
   "customizations": {
@@ -39,20 +39,8 @@
       ],
       "settings": {
         // ✅ /workspace/backend を開いていても /workspace/.git を拾う
-        "git.openRepositoryInParentFolders": "always",
-        // ✅ target/node_modules/.git の監視を除外（WSL + bind mount で重くなる対策）
-        "files.watcherExclude": {
-          "**/target/**": true,
-          "**/node_modules/**": true,
-          "**/.git/**": true
-        },
-        // ✅ 検索対象からも除外
-        "search.exclude": {
-          "**/target/**": true,
-          "**/node_modules/**": true
-        },
-        // 任意：rust-analyzer のワークスペース探索
-        "rust-analyzer.cargo.workspaceDiscovery": true
+        "git.openRepositoryInParentFolders": "always"
+
       }
     }
   },
@@ -64,6 +52,7 @@
     "SSH_AUTH_SOCK": "/ssh-agent"
   },
   // backend 側でよく使うポートだけ forward
+  // 5432は「ホストのDBクライアント」から接続するので必須
   "forwardPorts": [
     8080,
     5432

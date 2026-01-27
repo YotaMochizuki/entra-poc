@@ -7,18 +7,21 @@ ARG USER_GID=1000
 
 # ✅ ユーザー作成（衝突は考慮しない前提）
 RUN groupadd --gid ${USER_GID} ${USERNAME} \
- && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} -s /bin/bash
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} -s /bin/bash
 
-# (任意) devcontainer で git/https 等を使うなら
+# (任意) devcontainer で git/https 等を使うなら + ネイティブ依存対策
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git ca-certificates curl bash \
- && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends \
+    git ca-certificates curl bash \
+    pkg-config libssl-dev build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# ✅ volume 初期化対策：
-# - backend_target が /workspace/backend/target にマウントされるので
-#   マウント先を先に作って「vscode 所有」にしておく
+# ✅ rustfmt/clippy を Dockerfile で保証（エディタ非依存）
+RUN rustup component add rustfmt clippy
+
+# ✅ volume 初期化対策
 RUN mkdir -p /workspace/backend/target \
- && chown -R ${USERNAME}:${USERNAME} /workspace
+    && chown -R ${USERNAME}:${USERNAME} /workspace
 
 WORKDIR /workspace/backend
 

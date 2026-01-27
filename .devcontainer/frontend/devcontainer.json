@@ -44,16 +44,7 @@
       ],
       "settings": {
         // ✅ /workspace/frontend を開いていても /workspace/.git を拾う
-        "git.openRepositoryInParentFolders": "always",
-        // ✅ 監視負荷軽減（DevContainer 側の最低限）
-        "files.watcherExclude": {
-          "**/node_modules/**": true,
-          "**/.git/**": true
-        },
-        // ✅ 検索対象からも除外（重いので）
-        "search.exclude": {
-          "**/node_modules/**": true
-        }
+        "git.openRepositoryInParentFolders": "always"
       }
     }
   },

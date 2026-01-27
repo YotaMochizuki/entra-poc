@@ -1,0 +1,14 @@
+{ // ✅ Rust: 保存時フォーマット（Dockerfileで rustfmt を保証している前提）
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  // ✅ Rust: 保存時チェック（好みで "check" に落としてもOK）
+  "rust-analyzer.checkOnSave.command": "clippy",
+  "rust-analyzer.checkOnSave.extraArgs": [
+    "--all-targets",
+    "--all-features"
+  ],
+  // 任意：rust-analyzer のワークスペース探索（単一crateなら消してOK）
+  "rust-analyzer.cargo.workspaceDiscovery": true
+}
