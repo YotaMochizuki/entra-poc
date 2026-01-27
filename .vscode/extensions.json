@@ -1,0 +1,6 @@
+{
+	// vscodeのPROBLEMSタブに出る不要な警告を黙らせたいならインストール推奨
+	"recommendations": [
+		"biomejs.biome",
+	]
+}
