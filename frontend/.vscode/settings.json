@@ -1,0 +1,40 @@
+{
+	// ==================================
+	// Frontend DevContainer 用（Biome）
+	// ==================================
+	// 保存時フォーマット（Biome）
+	"editor.formatOnSave": true,
+	// JS/TS/React は Biome をデフォルトフォーマッタにする
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	// 保存時のコードアクション（Auto Save と喧嘩しにくい explicit）
+	"editor.codeActionsOnSave": {
+		"quickfix.biome": "explicit",
+		"source.organizeImports.biome": "explicit"
+	},
+	// JSON / JSONC は VS Code 標準（Biome で統一してもOK）
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features",
+		"editor.tabSize": 2
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features",
+		"editor.tabSize": 2
+	},
+	// ついでに差分安定化（必要に応じて）
+	"editor.tabSize": 2,
+	"editor.insertSpaces": true,
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true
+}

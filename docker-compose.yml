@@ -23,7 +23,7 @@ services:
       - frontend_node_modules:/workspace/frontend/node_modules
     ports:
       - "5173:5173"
-    command: ["sh", "-lc", "cd /workspace/frontend && npm run dev -- --host 0.0.0.0 --port 5173"]
+    command: sleep infinity
 
   db:
     image: postgres:16

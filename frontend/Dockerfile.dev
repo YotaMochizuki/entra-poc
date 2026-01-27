@@ -2,9 +2,12 @@
 FROM public.ecr.aws/docker/library/node:20-bookworm
 
 # dev 用ユーティリティ（rootで）
+# - lsof: 5173 を掴んでいるプロセス特定/kill 用（Vite 残留対策）
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-     git ca-certificates curl bash \
+  git ca-certificates curl bash \
+  lsof \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 # ✅ volume 初期化対策：マウント先を先に作って「node所有」にしておく

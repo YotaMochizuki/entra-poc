@@ -1,0 +1,6 @@
+{
+	// Frontend（React/TS）向け推奨拡張
+	"recommendations": [
+		"biomejs.biome",
+	]
+}

@@ -1,12 +1,26 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Frontend: Chrome (open Vite)",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:5173",
-      "webRoot": "/workspace/frontend"
-    }
-  ]
+	// VS Code Debug 設定ファイルのバージョン
+	// 現在はほぼ 0.2.0 固定でOK
+	"version": "0.2.0",
+	// 単体のデバッグ構成を定義
+	"configurations": [
+		{
+			// デバッグ構成の表示名（F5時に選択される）
+			"name": "Frontend: Chrome (open Vite)",
+			// Chrome を使ったデバッグであることを指定
+			"type": "chrome",
+			// 新しく Chrome を起動するモード
+			// 既存の Chrome に接続する場合は "attach"
+			"request": "launch",
+			// Chrome 起動後に開く URL
+			// ※ Vite Dev Server は事前に起動している必要がある
+			"url": "http://localhost:5173",
+			// ブラウザ上の JavaScript と
+			// ローカル（DevContainer内）のソースコードを
+			// 正しく紐づけるためのルートディレクトリ
+			//
+			// ここがズレるとブレークポイントが効かない
+			"webRoot": "/workspace/frontend"
+		}
+	],
 }
