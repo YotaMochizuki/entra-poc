@@ -5,23 +5,10 @@
       "name": "Backend: Actix (debug)",
       "type": "lldb",
       "request": "launch",
-      "initCommands": [
-        "settings set target.disable-aslr false"
-      ],
-      "cargo": {
-        "args": [
-          "run"
-        ],
-        "filter": {
-          "name": "backend",
-          "kind": "bin"
-        }
-      },
-      "env": {
-        "RUST_LOG": "debug",
-        "DATABASE_URL": "postgres://app:app@db:5432/appdb"
-      },
-      "cwd": "/workspace/backend"
+      "program": "${workspaceFolder}/target/debug/backend",
+      "args": [],
+      "preLaunchTask": "backend: build (debug)",
+      "envFile": "${workspaceFolder}/.env.dev",
     }
   ]
 }
