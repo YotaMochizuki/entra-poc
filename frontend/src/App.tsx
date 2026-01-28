@@ -16,6 +16,7 @@ type ApiResult = {
 export default function App(): JSX.Element {
 	const [status, setStatus] = useState<string>("initializing");
 	const [result, setResult] = useState<ApiResult | null>(null);
+	const [tokenInfo, setTokenInfo] = useState<unknown>(null);
 
 	useEffect(() => {
 		const bootstrap = async (): Promise<void> => {
@@ -24,12 +25,43 @@ export default function App(): JSX.Element {
 				const account = msal.getAllAccounts()[0];
 				setStatus(account ? `Signed in: ${account.username}` : "Signed out");
 			} catch (error) {
+				console.error("bootstrap error:", error);
 				setStatus(error instanceof Error ? error.message : "Unknown error");
 			}
 		};
 
 		void bootstrap();
 	}, []);
+
+	const showTokenInfo = async (): Promise<void> => {
+		try {
+			setStatus("Reading token...");
+			const token = await getApiAccessToken();
+
+			// JWT payload をデコード（表示用。署名検証はしない）
+			const parts = token.split(".");
+			if (parts.length < 2) {
+				throw new Error("Invalid JWT format");
+			}
+
+			const base64Url = parts[1] ?? "";
+			const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+			const json = decodeURIComponent(
+				atob(base64)
+					.split("")
+					.map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, "0")}`)
+					.join(""),
+			);
+
+			const payload = JSON.parse(json) as unknown;
+
+			setTokenInfo(payload);
+			setStatus("Token decoded");
+		} catch (error) {
+			console.error("token decode error:", error);
+			setStatus(error instanceof Error ? error.message : "Token decode error");
+		}
+	};
 
 	const handleCallApi = async (): Promise<void> => {
 		try {
@@ -38,6 +70,7 @@ export default function App(): JSX.Element {
 			setResult(data);
 			setStatus("OK");
 		} catch (error) {
+			console.error("api error:", error);
 			setStatus(error instanceof Error ? error.message : "API error");
 		}
 	};
@@ -58,27 +91,19 @@ export default function App(): JSX.Element {
 					<button type="button" onClick={() => void signOut()}>
 						Sign out
 					</button>{" "}
-					<button
-						type="button"
-						onClick={() => {
-							void (async () => {
-								try {
-									const token = await getApiAccessToken();
-									console.log("access token head:", token.slice(0, 20));
-									setStatus("Token OK (see console)");
-								} catch (e) {
-									console.error(e);
-									setStatus(e instanceof Error ? e.message : "Token error");
-								}
-							})();
-						}}
-					>
-						Show token head
+					<button type="button" onClick={() => void showTokenInfo()}>
+						Show token info
 					</button>{" "}
 					<button type="button" onClick={() => void handleCallApi()}>
 						Call /me
 					</button>
 				</>
+			)}
+
+			{tokenInfo !== null && (
+				<pre style={{ marginTop: 16, padding: 12, border: "1px solid #ccc" }}>
+					{JSON.stringify(tokenInfo, null, 2)}
+				</pre>
 			)}
 
 			{result !== null && (
